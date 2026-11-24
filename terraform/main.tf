@@ -36,34 +36,6 @@ resource "aws_lightsail_container_service" "catalog_service" {
   name  = "minishop-catalog-service"
   power = "nano"
   scale = 1
-
-  private_registry_access {
-    ecr_image_puller_role {
-      is_active = true
-    }
-  }
-}
-
-resource "aws_ecr_repository_policy" "catalog_repo_policy" {
-  repository = aws_ecr_repository.catalog_repo.name
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid    = "AllowLightsailPull"
-        Effect = "Allow"
-        Principal = {
-          AWS = aws_lightsail_container_service.catalog_service.private_registry_access[0].ecr_image_puller_role[0].principal_arn
-        }
-        Action = [
-          "ecr:BatchGetImage",
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:BatchCheckLayerAvailability"
-        ]
-      }
-    ]
-  })
 }
 
 # Декларативне розгортання контейнера catalog-app через Terraform
